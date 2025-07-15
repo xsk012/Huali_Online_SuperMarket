@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华理线上超市平台-常见问题</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/qa.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2E7D32', // 主绿色
+                        secondary: '#4CAF50', // 次要绿色
+                        light: '#A5D6A7', // 浅绿
+                        dark: '#1B5E20', // 深绿
+                        neutral: '#F1F8E9', // 浅绿色背景
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <!-- 导航栏 -->
+    <header
+        class="bg-gradient-to-r from-dark to-secondary text-white shadow-md sticky top-0 z-50 transition-all duration-300 h-[100px] flex items-center"
+        id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex text-primary items-center space-x-2">
+                <i
+                    class="fa fa-shopping-basket text-xl text-white md:text-2xl transform hover:scale-110 transition-transform duration-300"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-white ml-2">华理线上超市平台-常见问题</h1>
+            </div>
+            <div class="hidden md:flex space-x-6 head-div">
+                <a href="/products/"
+                    class="hidden md:inline-flex items-center text-dark font-medium relative group transition-all duration-300 head-a">
+                    <span>首页</span>
+                </a>
+                <a href="/user/"
+                    class="hidden md:inline-flex items-center text-dark font-medium relative group transition-all duration-300 head-a">
+                    <span>个人中心</span>
+                </a>
+            </div>
+            <button class="md:hidden text-gray-600" id="mobileMenuBtn">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- 右侧菜单 -->
+        <div class="md:hidden hidden bg-white shadow-lg absolute w-full" id="mobileMenu" style="animation: float 2s ease-in-out infinite;">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">首页</a>
+                <a href="#" class="text-primary font-medium py-2">个人中心</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <section class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-gray-800 mb-3">常见问题解答</h2>
+                <p class="text-gray-600 max-w-xl mx-auto">有任何关于华理线上超市平台的问题？我们在这里为您提供帮助</p>
+            </div>
+
+            <!-- Q&A 交互区域 -->
+            <div
+                class="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl card-hover">
+                <div class="p-6">
+                    <!-- 搜索/提问框 -->
+                    <div class="relative mb-6">
+                        <input type="text" id="questionInput" placeholder="请输入您的问题..."
+                            class="w-full px-5 py-4 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-gray-800">
+                        <button id="submitQuestion"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-dark transition-colors">
+                            <i class="fa fa-search mr-1"></i> 提问
+                        </button>
+                    </div>
+
+                    <!-- 提示问题 -->
+                    <div id="suggestedQuestions" class="mb-6 text-sm text-gray-400 space-y-2">
+                    </div>
+
+                    <!-- 回答展示区域 -->
+                    <div id="answerContainer" class="mt-8 hidden">
+                        <div class="p-5 bg-neutral rounded-lg border border-light">
+                            <h3 class="font-semibold text-gray-800 mb-3" id="answerTitle">问题标题</h3>
+                            <div class="text-gray-700" id="answerContent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 搜索结果区域 -->
+                    <div id="searchResults" class="mt-8 hidden">
+                        <h3 class="font-semibold text-gray-800 mb-3">相关搜索结果：</h3>
+                        <div id="resultsList" class="space-y-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 热门问题 -->
+            <div class="mt-12">
+                <h3 class="text-xl font-bold text-gray-800 mb-5">热门问题</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer question-item card-hover"
+                        data-question="如何注册华理线上超市平台账号？">
+                        <p class="text-gray-700"><i class="fa fa-question-circle text-primary mr-2"></i>如何注册华理线上超市平台账号？
+                        </p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer question-item card-hover"
+                        data-question="华理线上超市的配送范围是哪些区域？">
+                        <p class="text-gray-700"><i
+                                class="fa fa-question-circle text-primary mr-2"></i>华理线上超市的配送范围是哪些区域？</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer question-item card-hover"
+                        data-question="订单提交后可以修改或取消吗？">
+                        <p class="text-gray-700"><i class="fa fa-question-circle text-primary mr-2"></i>订单提交后可以修改或取消吗？
+                        </p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer question-item card-hover"
+                        data-question="支持哪些支付方式？">
+                        <p class="text-gray-700"><i class="fa fa-question-circle text-primary mr-2"></i>支持哪些支付方式？</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 超出范围提示弹窗 -->
+    <div id="outOfRangeModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
+            id="modalContent">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa fa-exclamation-triangle text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">超出范围</h3>
+                <p class="text-gray-600 mb-5">抱歉，您的问题超出了我们的知识范围。请尝试其他问题。</p>
+                <button id="closeModal"
+                    class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-dark transition-colors">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        // 常见问题和答案数据
+        const faqData = [
+            {
+                question: "如何注册华理线上超市平台账号？",
+                answer: "注册华理线上超市平台账号非常简单。您需要使用手机号进行注册，要保证手机号的合法性，以及密码不能超过8位。注册成功后，您可以完善个人信息并开始购物。"
+            },
+            {
+                question: "华理线上超市的配送范围是哪些区域？",
+                answer: "目前我们的配送范围覆盖整个华东理工大学校园，包括所有学生宿舍区、教学区和教职工生活区。校园外的地址暂时不支持配送服务。我们正在努力扩大配送范围，敬请期待。"
+            },
+            {
+                question: "订单提交后可以修改或取消吗？",
+                answer: "订单提交后，如果还在配送过程中，您可以在'订单'栏目中申请取消。取消订单后，支付金额将按原支付方式退回。"
+            },
+            {
+                question: "支持哪些支付方式？",
+                answer: "我们目前支持微信支付方式。其他支付方式，包括校园一卡通、微信支付、支付宝支付以及银行卡支付，敬请期待！"
+            },
+            {
+                question: "如何申请退货？",
+                answer: "如果您对收到的商品不满意，并且商品还在配送过程中，您可以在'订单'栏目中申请取消。取消订单后，支付金额将按原支付方式退回。"
+            },
+            {
+                question: "配送时间是什么时候？",
+                answer: "我们的配送时间为工作日9:00-21:00，周末及节假日10:00-20:00。一般情况下，下单后1-2小时内可以送达。高峰期可能会有延迟，我们会在下单时告知预计送达时间。"
+            },
+            {
+                question: "会员有什么特权？",
+                answer: "华理线上超市会员可以享受多种特权，包括会员专享价、生日福利、积分加倍、免费配送门槛降低、优先配送等。会员功能还在开发，敬请期待！"
+            },
+        ];
+
+
+        const questionInput = document.getElementById('questionInput');
+        const submitQuestion = document.getElementById('submitQuestion');
+        const suggestedQuestions = document.getElementById('suggestedQuestions');
+        const answerContainer = document.getElementById('answerContainer');
+        const answerTitle = document.getElementById('answerTitle');
+        const answerContent = document.getElementById('answerContent');
+        const searchResults = document.getElementById('searchResults');
+        const resultsList = document.getElementById('resultsList');
+        const questionItems = document.querySelectorAll('.question-item');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const outOfRangeModal = document.getElementById('outOfRangeModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModal = document.getElementById('closeModal');
+        const navbar = document.getElementById('navbar');
+
+
+        // 随机显示几个提示问题
+        function showRandomSuggestions() {
+            suggestedQuestions.innerHTML = '';
+            const numSuggestions = Math.floor(Math.random() * 3) + 3;
+            const shuffled = [...faqData].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, numSuggestions);
+
+            selected.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center';
+                div.innerHTML = `<i class="fa fa-lightbulb-o mr-2"></i>${item.question}`;
+                suggestedQuestions.appendChild(div);
+
+                // 点击提示问题自动填充到输入框
+                div.addEventListener('click', () => {
+                    questionInput.value = item.question;
+                });
+            });
+        }
+
+
+        // 提交问题处理
+        function handleQuestionSubmit() {
+            const question = questionInput.value.trim().toLowerCase();
+            if (!question) return;
+
+            // 隐藏之前的结果
+            answerContainer.classList.add('hidden');
+            searchResults.classList.add('hidden');
+
+            // 检查是否匹配常见问题
+            const matchedFaq = faqData.find(item =>
+                item.question.toLowerCase().includes(question) ||
+                question.includes(item.question.toLowerCase())
+            );
+
+            if (matchedFaq) {
+                // 显示匹配的答案
+                answerTitle.textContent = matchedFaq.question;
+                answerContent.textContent = matchedFaq.answer;
+                answerContainer.classList.remove('hidden');
+                scrollToAnswer();
+            } else {
+                // 执行关键词搜索
+                const keywords = question.split(/\s+/);
+                const relevantResults = faqData.filter(item =>
+                    keywords.some(keyword =>
+                        item.question.toLowerCase().includes(keyword) ||
+                        item.answer.toLowerCase().includes(keyword)
+                    )
+                );
+
+                if (relevantResults.length > 0) {
+                    // 显示相关搜索结果
+                    resultsList.innerHTML = '';
+                    relevantResults.forEach(item => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'p-3 bg-neutral rounded border border-light hover:border-primary cursor-pointer transition-colors';
+                        resultItem.innerHTML = `<p class="text-gray-700">${item.question}</p>`;
+                        resultItem.addEventListener('click', () => {
+                            answerTitle.textContent = item.question;
+                            answerContent.textContent = item.answer;
+                            answerContainer.classList.remove('hidden');
+                            searchResults.classList.add('hidden');
+                            questionInput.value = item.question;
+                            scrollToAnswer();
+                        });
+                        resultsList.appendChild(resultItem);
+                    });
+                    searchResults.classList.remove('hidden');
+                    scrollToResults();
+                } else {
+                    // 超出范围，显示弹窗
+                    openModal();
+                }
+            }
+        }
+
+
+        // 滚动到回答区域
+        function scrollToAnswer() {
+            answerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
+        // 滚动到搜索结果区域
+        function scrollToResults() {
+            searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
+        // 打开弹窗
+        function openModal() {
+            outOfRangeModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+
+        // 关闭弹窗
+        function closeModalFunc() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                outOfRangeModal.classList.add('hidden');
+            }, 300);
+        }
+
+
+        // 加载事件
+        submitQuestion.addEventListener('click', handleQuestionSubmit);
+
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleQuestionSubmit();
+            }
+        });
+
+
+        // 点击热门问题直接显示答案
+        questionItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const question = item.getAttribute('data-question');
+                const faqItem = faqData.find(faq => faq.question === question);
+
+                if (faqItem) {
+                    answerTitle.textContent = faqItem.question;
+                    answerContent.textContent = faqItem.answer;
+                    answerContainer.classList.remove('hidden');
+                    searchResults.classList.add('hidden');
+                    questionInput.value = faqItem.question;
+                    scrollToAnswer();
+                }
+            });
+        });
+
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+
+
+        closeModal.addEventListener('click', closeModalFunc);
+
+
+        // 点击弹窗外部关闭
+        outOfRangeModal.addEventListener('click', (e) => {
+            if (e.target === outOfRangeModal) {
+                closeModalFunc();
+            }
+        });
+
+
+        // 滚动时导航栏效果
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-lg');
+                navbar.classList.remove('py-3', 'shadow-md');
+            } else {
+                navbar.classList.add('py-3', 'shadow-md');
+                navbar.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+
+        
+        // 页面加载时显示随机提示
+        window.addEventListener('DOMContentLoaded', () => {
+            showRandomSuggestions();
+        });
+
+    </script>
+</body>
+
+</html>
+
+

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/basic.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+    <title>华理线上超市平台-主页</title>
+
+</head>
+
+<body>
+
+    <!-- 导航栏 -->
+    <header class="header-block">
+        <div class="header-content">
+            <i class="basket-icon fa fa-shopping-basket"></i>
+            <div class="text-container">
+                <h1>华东理工大学线上超市平台</h1>
+                <p>便捷校园购物，服务华理师生</p>
+            </div>
+            <a href="/qa/" class="clj">
+                <span>常见问题汇总</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 左边栏 -->
+    <div class="sidebar">
+        <div class="nav-item" id="goodsNav">
+            商品栏目
+            <div class="dropdown" id="goodsDropdown">
+                <div class="dropdown-item" data-category="零食饮料">零食饮料</div>
+                <div class="dropdown-item" data-category="生活用品">生活用品</div>
+                <div class="dropdown-item" data-category="学习文具">学习文具</div>
+                <div class="dropdown-item" data-category="水果生鲜">水果生鲜</div>
+                <div class="dropdown-item" data-category="校园周边">校园周边</div>
+            </div>
+        </div>
+        <div class="nav-item" id="cartNav">购物车</div>
+        <div class="nav-item" id="orderNav">订单</div>
+    </div>
+
+    <!-- 内容区 -->
+    <div class="main-content">
+
+        <!-- 右边的搜索框 -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="请输入商品名称搜索...">
+            <button id="searchBtn">搜索</button>
+        </div>
+
+        <!-- 显示搜索结果 -->
+        <div class="search-result" id="searchResult">
+            <h3>搜索结果：</h3>
+            <div id="resultList"></div>
+        </div>
+
+        <!-- 商品显示（一开始是零食饮料） -->
+        <div class="product-list" id="productList">
+            <h3 class="list-title" id="listCategoryTitle">零食饮料</h3>
+            <div id="productItems"></div>
+        </div>
+
+        <!-- 购物车内容显示 -->
+        <div class="cart-container" id="cartContainer">
+            <h3 class="cart-title">我的购物车</h3>
+            <div id="cartItems"></div>
+            <div class="cart-summary">
+                <div>总计：<span class="total-price" id="totalPrice">¥0.00</span></div>
+                <button class="submit-order-btn" id="submitOrderBtn" disabled>结算所有商品</button>
+                <button class="delete-order-btn" id="deleteOrderBtn" disabled>清空购物车</button>
+            </div>
+        </div>
+
+        <!-- 订单内容显示 -->
+        <div class="order-container" id="orderContainer">
+            <h3 class="order-title">我的订单</h3>
+            <div id="orderItems">
+                <div class="no-order" id="noOrderMsg">
+                    <i class="fas fa-file-invoice"></i>
+                    <p>该用户没有订单</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人中心栏目 -->
+    <div class="user-center-btn" id="userCenterBtn" title="个人中心">
+        <i class="fas fa-user"></i>
+    </div>
+
+    <!-- 订单提交成功提示框 -->
+    <div class="success-toast" id="successToast">
+        <p>订单已提交</p>
+    </div>
+
+    <!-- 提示框 -->
+    <div id="snackbar"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-md shadow-lg z-50 text-white opacity-0 transition-all duration-300 pointer-events-none">
+        <span id="snackbarMessage"></span>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+
+        // 所有的商品数据
+        const products = [
+            { id: 1, name: '原味薯片', category: '零食饮料', price: 5.5 },
+            { id: 2, name: '可乐（500ml）', category: '零食饮料', price: 3.0 },
+            { id: 3, name: '巧克力饼干', category: '零食饮料', price: 8.9 },
+            { id: 4, name: '瓶装果汁', category: '零食饮料', price: 4.5 },
+            { id: 5, name: '牛肉干', category: '零食饮料', price: 15.8 },
+            { id: 6, name: '洗发水（500ml）', category: '生活用品', price: 35.9 },
+            { id: 7, name: '卫生纸（10卷）', category: '生活用品', price: 22.5 },
+            { id: 8, name: '洗衣液', category: '生活用品', price: 28.0 },
+            { id: 9, name: '牙膏', category: '生活用品', price: 12.8 },
+            { id: 10, name: '毛巾', category: '生活用品', price: 9.9 },
+            { id: 11, name: '笔记本（A4）', category: '学习文具', price: 5.0 },
+            { id: 12, name: '中性笔（黑色）', category: '学习文具', price: 2.5 },
+            { id: 13, name: '文件夹', category: '学习文具', price: 8.0 },
+            { id: 14, name: '便利贴', category: '学习文具', price: 3.5 },
+            { id: 15, name: '马克笔套装', category: '学习文具', price: 36.0 },
+            { id: 16, name: '红富士苹果（500g）', category: '水果生鲜', price: 8.5 },
+            { id: 17, name: '香蕉（一串）', category: '水果生鲜', price: 6.9 },
+            { id: 18, name: '草莓（250g）', category: '水果生鲜', price: 15.8 },
+            { id: 19, name: '圣女果', category: '水果生鲜', price: 9.9 },
+            { id: 20, name: '西瓜（半个）', category: '水果生鲜', price: 22.0 },
+            { id: 21, name: '华理校徽', category: '校园周边', price: 15.0 },
+            { id: 22, name: '校园明信片套装', category: '校园周边', price: 25.0 },
+            { id: 23, name: '华理纪念书签', category: '校园周边', price: 8.0 },
+            { id: 24, name: '定制笔记本', category: '校园周边', price: 18.0 },
+            { id: 25, name: '校园地图', category: '校园周边', price: 5.0 }
+        ];
+
+        // 购物车内容数据
+        let cart = [];
+
+        // 订单内容数据
+        let orders = [];
+
+        // 添加商品到购物车
+        async function addToCart(productId, productName, productPrice) {
+            try {
+                // 发送POST请求到后端接口，携带id、product_name、price参数
+                const response = await fetch('/products/add-to-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: productId,
+                        product_name: productName,
+                        price: productPrice
+                    }),
+                });
+                const data = await response.json();
+
+                // 处理服务器响应
+                if (data.code != 200) {
+                    throw new Error('添加失败：' + data.message);
+                }
+
+                showToast(`${productName} 已加入购物车`);
+
+            } catch (error) {
+                console.log('添加商品到购物车出错：' + error.message);
+                alert('添加商品到购物车出错：' + error.message);
+            }
+        }
+
+        // 更新购物车的显示
+        async function updateCartDisplay() {
+            try {
+
+                // 发送get请求，获取购物车内数据
+                const response = await fetch('/cart/');
+                const responseData = await response.json();
+
+                // 验证响应格式
+                if (responseData.code !== 200 || !responseData.data?.products_incart_list) {
+                    throw new Error('购物车数据格式错误');
+                }
+
+                // 从响应中提取商品列表
+                const products = responseData.data.products_incart_list;
+
+                const cartItems = document.getElementById('cartItems');
+                const totalPriceEl = document.getElementById('totalPrice');
+                cartItems.innerHTML = '';
+                let totalPrice = 0;
+
+                if (products.length == 0) {
+                    cartItems.innerHTML = '<p>购物车是空的，快去添加商品吧！</p>';
+                }
+                else {
+
+                    // 转换为本地格式
+                    cart = products.map(item => ({
+                        name: item.name || '未知商品',
+                        price: parseFloat(item.price) || 0,
+                        quantity: item.quantity || 1,
+                        totalPrice: (item.price * (item.quantity || 1)).toFixed(2)
+                    }));
+
+                    // 更新UI
+                    cart.forEach(item => {
+                        totalPrice += parseFloat(item.totalPrice);
+                        const cartItem = document.createElement('div');
+                        cartItem.className = 'cart-item';
+                        cartItem.innerHTML = `
+                <div>
+                    <span>${item.name}</span>
+                    <span style="margin-left: 10px; color: #666;">(数量: ${item.quantity})</span>
+                </div>
+                <div>
+                    <span>单价: ¥${item.price.toFixed(2)}</span>
+                    <span style="margin-left: 15px; color: #e53935;">
+                        小计: ¥${item.totalPrice}
+                    </span>
+                </div>
+            `;
+                        cartItems.appendChild(cartItem);
+                    });
+
+                    totalPriceEl.textContent = `¥${totalPrice.toFixed(2)}`;
+
+                    // 更新提交按钮状态
+                    document.getElementById('submitOrderBtn').disabled = cart.length === 0;
+                    document.getElementById('deleteOrderBtn').disabled = cart.length === 0;
+                }
+
+            } catch (error) {
+                console.log('更新购物车显示出错:' + error.message);
+                alert('购物车加载失败');
+            }
+        }
+
+
+        // 清空购物车
+        async function deleteOrder() {
+            try {
+                // 显示加载状态
+                const submitBtn = document.getElementById('deleteOrderBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '提交中...';
+
+                const response = await fetch('/cart/removeall');
+
+                if (!response.ok) {
+                    throw new Error(`${response.status}`);
+                }
+
+                showToast('清空购物车成功');
+                updateCartDisplay();
+
+            } catch (error) {
+
+                console.error(error.message);
+                alert('清空购物车失败: ${error.message}');
+
+            } finally {
+
+                // 恢复按钮状态
+                const deleteBtn = document.getElementById('deleteOrderBtn');
+                deleteBtn.disabled = cart.length === 0;
+                deleteBtn.textContent = '清空购物车';
+
+            }
+        }
+
+
+        // 结算所有商品
+        async function submitOrder() {
+            if (cart.length == 0) {
+                alert("订单为空！");
+
+            }
+            else {
+                try {
+
+                    const submitBtn = document.getElementById('submitOrderBtn');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '提交中...';
+
+                    const response = await fetch('/cart/payall/');
+                    const data = await response.json();
+
+                    if (data.code !== 200) {
+                        throw new Error(`订单提交失败: ${data.message}`);
+                    }
+
+                    await showToast('订单提交成功！');
+
+                    setTimeout(() => {
+                        window.location.href = `/pay?id=${data.data.id}&info=${data.data.info}`;
+                    }, 1000);
+
+                } catch (error) {
+
+                    console.error('提交订单出错:', error.message);
+                    alert(`订单提交失败: ${error.message}`);
+
+                } finally {
+
+                    // 恢复按钮状态
+                    const submitBtn = document.getElementById('submitOrderBtn');
+                    submitBtn.disabled = cart.length === 0;
+                    submitBtn.textContent = '结算所有商品';
+
+                }
+            }
+        }
+
+
+        // 更新订单显示
+        async function updateOrderDisplay() {
+            const orderItems = document.getElementById('orderItems');
+            const noOrderMsg = document.getElementById('noOrderMsg');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            try {
+                if (loadingIndicator) loadingIndicator.style.display = 'block';
+
+                const response = await fetch('/orders/');
+                const data = await response.json();
+
+                if (data.code !== 200) {
+                    throw new Error(data.message);
+                }
+
+                const ordersData = data.data.products_inorders_list;
+
+                // 清空现有订单列表（保留无订单提示容器）
+                Array.from(orderItems.children).forEach(child => {
+                    if (child.id !== 'noOrderMsg') {
+                        orderItems.removeChild(child);
+                    }
+                });
+
+                if (ordersData.length > 0) {
+                    noOrderMsg.style.display = 'none';
+
+                    // 按id倒序显示订单（最新的在前）
+                    const sortedOrders = [...ordersData].sort((a, b) => b.id - a.id);
+
+                    // 添加订单
+                    sortedOrders.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.className = 'order-item bg-white rounded-lg shadow-sm p-4 mb-4';
+
+                        const formattedPrice = parseFloat(order.price).toFixed(2);
+
+                        // 映射订单状态
+                        const statusMap = {
+                            0: '待收货',
+                        };
+                        const orderStatus = statusMap[order.state];
+                        const statusClass = order.state === 0 ? 'text-orange-500' :
+                            order.state === 1 ? 'text-blue-500' :
+                                'text-gray-500';
+                        const isDisabled = order.state === 1 || order.state === 2;
+
+                        orderDiv.innerHTML = `
+                    <div class="order-header flex justify-between items-center mb-2">
+                        <div class="font-medium">订单编号：${order.id}</div>
+                        <div class="order-status ${statusClass}">${orderStatus}</div>
+                    </div>
+                    <div class="order-date text-sm text-gray-500 mb-3">下单时间：${order.time}</div>
+                    <div class="order-date text-sm text-gray-500 mb-3">订单商品信息：${order.info}</div>
+                    <div class="order-product flex items-center mb-3">
+                        <div>
+                            <!-- <div class="font-medium">${order.id}</div> -->
+                        </div>
+                    </div>
+                    <div class="order-total flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="font-medium">订单总额：</span>
+                        <span class="text-lg font-bold text-red-500">¥${formattedPrice}</span>
+                        <br>
+                        <button 
+                            class="submit-order-btn" 
+                            id="submitOrderBtn-${order.id}" 
+                            ${isDisabled ? 'disabled' : ''}
+                            onclick="handleConfirmReceipt(${order.id})"
+                         >确认收货</button>
+                        <button 
+                            class="delete-order-btn" 
+                            id="deleteOrderBtn-${order.id}" 
+                            ${isDisabled ? 'disabled' : ''}
+                            onclick="handleRefuseReceipt(${order.id})"
+                        >退款</button>
+                    </div>
+                `;
+
+                        orderItems.insertBefore(orderDiv, noOrderMsg);
+                    });
+                } else {
+                    noOrderMsg.style.display = 'block';
+                }
+            } catch (error) {
+
+                console.error('获取订单出错:', error);
+
+            }
+        }
+
+
+        // 确认收货按钮的点击事件
+        async function handleConfirmReceipt(orderId) {
+            try {
+
+                const button = document.getElementById(`submitOrderBtn-${orderId}`);
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = '处理中...';
+                }
+
+                const response = await fetch('/orders/sure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: orderId
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    showToast('确认收货成功！');
+
+
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+
+                console.error('确认收货出错:', error);
+                alert('操作失败: ${error.message}');
+
+            } finally {
+
+                const button = document.getElementById(`submitOrderBtn-${orderId}`);
+                if (button) {
+                    button.textContent = '确认收货';
+                }
+                updateOrderDisplay();
+
+            }
+        }
+
+
+        // 退款按钮的点击事件
+        async function handleRefuseReceipt(orderId) {
+            try {
+
+                const button = document.getElementById(`submitOrderBtn-${orderId}`);
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = '处理中...';
+                }
+
+                const response = await fetch('/orders/remove-from-orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: orderId
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    showToast('退款成功！');
+
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+
+                console.error('退款出错:', error);
+                alert(`操作失败: ${error.message}`);
+
+            } finally {
+
+                const button = document.getElementById(`submitOrderBtn-${orderId}`);
+                if (button) {
+                    button.textContent = '退款';
+                }
+                updateOrderDisplay(); // 刷新订单列表
+
+            }
+        }
+
+
+        // 辅助函数：格式化日期时间
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+
+        // 显示订单页面
+        function showOrderPage() {
+            document.getElementById('productList').classList.remove('show');
+            document.getElementById('searchResult').classList.remove('show');
+            document.getElementById('cartContainer').classList.remove('show');
+
+            document.getElementById('orderContainer').classList.add('show');
+
+            // 更新导航激活状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById('orderNav').classList.add('active');
+
+            // 更新订单显示
+            updateOrderDisplay();
+
+        }
+
+
+        // 提示框
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 1000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: type === 'success' ? "#0099ff" : "#F5222D",
+                style: {
+                    borderRadius: "12px",
+                },
+                stopOnFocus: true,
+            }).showToast();
+        }
+
+
+
+
+
+
+
+
+
+
+
+        // 点击商品栏目，下拉菜单
+        const goodsNav = document.getElementById('goodsNav');
+        const goodsDropdown = document.getElementById('goodsDropdown');
+
+        goodsNav.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goodsDropdown.classList.toggle('show');
+            goodsNav.classList.toggle('active');
+            cartNav.classList.remove('active');
+            orderNav.classList.remove('active');
+        });
+
+        document.addEventListener('click', () => {
+            goodsDropdown.classList.remove('show');
+            goodsNav.classList.remove('active');
+        });
+
+
+        // 商品分类点击事件
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        const productList = document.getElementById('productList');
+        const listCategoryTitle = document.getElementById('listCategoryTitle');
+        const productItems = document.getElementById('productItems');
+        const searchResult = document.getElementById('searchResult');
+        const cartContainer = document.getElementById('cartContainer');
+        const cartNav = document.getElementById('cartNav');
+        const orderNav = document.getElementById('orderNav');
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                searchResult.classList.remove('show');
+                cartContainer.classList.remove('show');
+                document.getElementById('orderContainer').classList.remove('show');
+                productList.classList.add('show');
+
+                const category = item.getAttribute('data-category');
+                listCategoryTitle.textContent = category;
+                const categoryProducts = products.filter(p => p.category === category);
+
+                productItems.innerHTML = '';
+                categoryProducts.forEach(product => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'product-item';
+                    itemDiv.innerHTML = `
+                        <div class="product-info">
+                            <a href="/products/${product.id}" class="product-name">${product.name}</a>
+                        </div>
+                        <div class="product-actions">
+                            <div class="product-price">¥${product.price.toFixed(2)}</div>
+                            <span class="add-to-cart" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}">
+                                <i class="fas fa-shopping-cart"></i> 加入购物车
+                            </span>
+                        </div>
+                    `;
+                    productItems.appendChild(itemDiv);
+                });
+
+                // 绑定加入购物车事件
+                productItems.querySelectorAll('.add-to-cart').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-id');
+                        const name = btn.getAttribute('data-name');
+                        const price = parseFloat(btn.getAttribute('data-price'));
+                        addToCart(id, name, price);
+                    });
+                });
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // 更新导航激活状态
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                goodsNav.classList.add('active');
+
+            });
+        });
+
+
+        // 购物车导航点击事件
+        cartNav.addEventListener('click', () => {
+
+            productList.classList.remove('show');
+            searchResult.classList.remove('show');
+
+            document.getElementById('orderContainer').classList.remove('show');
+            cartContainer.classList.add('show');
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            cartNav.classList.add('active');
+            updateCartDisplay();
+        });
+
+
+        // 订单导航点击事件
+        orderNav.addEventListener('click', showOrderPage);
+
+
+        // 搜索功能
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultList = document.getElementById('resultList');
+        // 关键词高亮
+        function highlightKeyword(text, keyword) {
+            if (!keyword) return text;
+            const regex = new RegExp(keyword, 'gi');
+            return text.replace(regex, match => `<span class="highlight">${match}</span>`);
+        }
+        // 处理搜索
+        function handleSearch() {
+            const keyword = searchInput.value.trim().toLowerCase();
+
+            if (!keyword) {
+                alert('请输入搜索关键词');
+                return;
+            }
+
+            productList.classList.remove('show');
+            cartContainer.classList.remove('show');
+            document.getElementById('orderContainer').classList.remove('show');
+            searchResult.classList.add('show');
+
+            const matchedProducts = products.filter(product =>
+                product.name.toLowerCase().includes(keyword) ||
+                product.category.toLowerCase().includes(keyword)
+            );
+
+            resultList.innerHTML = '';
+            if (matchedProducts.length > 0) {
+                resultList.innerHTML += `<p>找到 ${matchedProducts.length} 个相关商品</p >`;
+
+                matchedProducts.forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'product-item';
+                    item.innerHTML = `
+                         <div class="product-info">
+                            <a href="/products/${product.id}" class="product-name">
+                                ${highlightKeyword(product.name, keyword)}
+                            </a>
+                            <span class="product-category">(${product.category})</span>
+                        </div>
+                        <div class="product-actions">
+                            <div class="product-price">¥${product.price.toFixed(2)}</div>
+                            <span class="add-to-cart" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}">
+                                <i class="fas fa-shopping-cart"></i> 加入购物车
+                            </span>
+                        </div>
+                    `;
+                    resultList.appendChild(item);
+                });
+
+                // 绑定搜索结果的加入购物车事件
+                resultList.querySelectorAll('.add-to-cart').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-id');
+                        const name = btn.getAttribute('data-name');
+                        const price = parseFloat(btn.getAttribute('data-price'));
+                        addToCart(id, name, price);
+                    });
+                });
+            } else {
+                resultList.innerHTML = `
+                    <p>未找到包含"${keyword}"的商品</p >
+                    <p style="margin-top: 10px; color: #666;">建议尝试其他关键词</p >
+                `;
+            }
+
+            // 更新导航激活状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        // 绑定搜索事件
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+
+        // 个人中心点击事件
+        const userCenterBtn = document.getElementById('userCenterBtn');
+        userCenterBtn.addEventListener('click', () => {
+            window.location.href = '/user/';    // 跳转到个人中心   
+        });
+
+
+        // 绑定提交订单按钮事件
+        document.getElementById('submitOrderBtn').addEventListener('click', () => {
+            submitOrder();
+        });
+
+
+        // 绑定清空购物车按钮事件
+        document.getElementById('deleteOrderBtn').addEventListener('click', () => {
+            deleteOrder();
+        });
+        
+
+        // 初始显示第一个分类的商品
+        window.addEventListener('load', () => {
+            dropdownItems[0].click();
+            // 初始化订单显示
+            updateOrderDisplay();
+        });
+
+    </script>
+</body>
+
+</html>

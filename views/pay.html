@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华理线上超市平台-支付</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/pay.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1677FF',
+                        success: '#52C41A',
+                        neutral: '#F5F5F5',
+                        primary: '#2E7D32', // 主绿色
+                        secondary: '#4CAF50', // 次要绿色
+                        light: '#A5D6A7', // 浅绿
+                        dark: '#1B5E20', // 深绿
+                        neutral: '#F1F8E9', // 浅绿色背景
+                        'neutral-dark': '#262626',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <!-- 顶部导航 -->
+    <header
+        class="bg-gradient-to-r from-dark to-secondary text-white shadow-md sticky top-0 z-50 transition-all duration-300 h-[100px] flex items-center"
+        id="navbar">
+        <div class="flex justify-between items-center">
+            <button class="text-white px-10 py-3 p-2" onclick="window.location.href='/products/'">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-shadow px-3">确认支付</h1>
+            <div class="w-6"></div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="max-w-3xl mx-auto px-4 py-6">
+        <!-- 订单信息卡片 -->
+        <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+            <h2 class="text-lg mb-3">订单信息</h2>
+
+            <div class="pb-4 border-b border-gray-100">
+                <div>
+                    <p class="text-sm text-gray-500 mt-1" id="orderId"></p>
+                    <p class="text-sm text-gray-500 mt-1" id="orderInfo"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-between text-sm mt-4">
+                <span class="text-gray-500">支付方式</span>
+                <div class="flex items-center">
+                    <i class="fa fa-credit-card text-primary mr-1"></i>
+                    <span>微信支付</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 二维码支付区 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="text-center mb-5">
+                <h2 class="font-medium">请使用微信扫描二维码支付</h2>
+                <p class="text-sm text-gray-500 mt-1">有效期剩余 <span class="text-primary font-medium"
+                        id="countdown">05:00</span></p>
+            </div>
+
+            <!-- 二维码容器 -->
+            <div class="relative mx-auto w-64 h-64 mb-5">
+                <!-- 扫描框背景 -->
+                <div class="absolute inset-0 qr-scan-frame rounded-lg"></div>
+
+                <!-- 二维码边框 -->
+                <div class="absolute inset-0 m-1 bg-white rounded-lg pulse-border flex items-center justify-center">
+                    <!-- 二维码Canvas -->
+                    <canvas id="qrCanvas" class="w-56 h-56"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 底部提示 -->
+    <footer
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-4 text-center text-xs text-gray-500">
+        <p>支付安全由中国人民财产保险承保 | 客服热线: 400-123-4567</p>
+    </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+
+        // 解析url
+        function getUrlParams() {
+            const params = {};
+            const url = window.location.href;
+            const queryString = url.split('?')[1]; 
+
+            if (queryString) {
+                const paramPairs = queryString.split('&');
+                paramPairs.forEach(pair => {
+                    const [key, value] = pair.split('=');
+                    if (key && value) {
+                        params[key] = decodeURIComponent(value);
+                    }
+                });
+            }
+            return params;
+        }
+
+
+        // 更新订单信息
+        function updateOrderInfo() {
+            const params = getUrlParams();
+
+            const orderIdEl = document.getElementById('orderId');
+            if (params.id && orderIdEl) {
+                orderIdEl.textContent = '订单编号：' + params.id;
+            }
+
+            const orderInfoEl = document.getElementById('orderInfo');
+            if (params.info && orderInfoEl) {
+                orderInfoEl.textContent = '订单商品信息：' + params.info;
+            }
+        }
+
+
+        // 页面加载时更新订单信息
+        window.onload = function () {
+            updateOrderInfo(); 
+        };
+
+
+        // 二维码配置
+        const QR_CONFIG = {
+            size: 21,         
+            moduleSize: 12,  
+            margin: 2  
+        };
+
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d');
+        const countdownEl = document.getElementById('countdown');
+
+        canvas.width = (QR_CONFIG.size + 2 * QR_CONFIG.margin) * QR_CONFIG.moduleSize;
+        canvas.height = canvas.width;
+
+        // 初始化生成二维码
+        generatePaymentQRCode();
+
+        // 启动倒计时
+        startCountdown();
+
+        // 生成支付二维码（实际是随机生成）
+        function generatePaymentQRCode() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const matrix = createEmptyMatrix();
+
+            drawPositionPattern(matrix, QR_CONFIG.margin, QR_CONFIG.margin);
+            drawPositionPattern(matrix, QR_CONFIG.margin, QR_CONFIG.size + QR_CONFIG.margin - 7);
+            drawPositionPattern(matrix, QR_CONFIG.size + QR_CONFIG.margin - 7, QR_CONFIG.margin);
+
+            drawTimingPattern(matrix);
+
+            fillRandomData(matrix);
+
+            renderMatrix(matrix);
+        }
+
+
+        // 创建空矩阵
+        function createEmptyMatrix() {
+            const size = QR_CONFIG.size + 2 * QR_CONFIG.margin;
+            return Array.from({ length: size }, () => Array(size).fill(0));
+        }
+
+
+        // 绘制定位图案
+        function drawPositionPattern(matrix, x, y) {
+            // 外层黑色
+            for (let i = 0; i < 7; i++) {
+                for (let j = 0; j < 7; j++) {
+                    matrix[y + i][x + j] = 1;
+                }
+            }
+
+            // 中层白色
+            for (let i = 1; i < 6; i++) {
+                for (let j = 1; j < 6; j++) {
+                    matrix[y + i][x + j] = 0;
+                }
+            }
+
+            // 内层黑色
+            for (let i = 2; i < 5; i++) {
+                for (let j = 2; j < 5; j++) {
+                    matrix[y + i][x + j] = 1;
+                }
+            }
+        }
+
+
+        // 绘制时序图案 (水平线和垂直线)
+        function drawTimingPattern(matrix) {
+            const start = QR_CONFIG.margin + 7;
+            const end = QR_CONFIG.size + QR_CONFIG.margin - 7;
+
+            // 水平时序线
+            for (let x = start; x < end; x++) {
+                matrix[QR_CONFIG.margin + 6][x] = (x - start) % 2;
+            }
+
+            // 垂直时序线
+            for (let y = start; y < end; y++) {
+                matrix[y][QR_CONFIG.margin + 6] = (y - start) % 2;
+            }
+        }
+
+
+        // 填充随机数据
+        function fillRandomData(matrix) {
+            for (let y = QR_CONFIG.margin; y < QR_CONFIG.size + QR_CONFIG.margin; y++) {
+                for (let x = QR_CONFIG.margin; x < QR_CONFIG.size + QR_CONFIG.margin; x++) {
+                    // 跳过已绘制的图案
+                    if (matrix[y][x] !== 0) continue;
+
+                    // 跳过定位图案区域
+                    if ((x >= QR_CONFIG.margin && x < QR_CONFIG.margin + 7 && y >= QR_CONFIG.margin && y < QR_CONFIG.margin + 7) ||
+                        (x >= QR_CONFIG.margin && x < QR_CONFIG.margin + 7 && y >= QR_CONFIG.size + QR_CONFIG.margin - 7 && y < QR_CONFIG.size + QR_CONFIG.margin) ||
+                        (x >= QR_CONFIG.size + QR_CONFIG.margin - 7 && x < QR_CONFIG.size + QR_CONFIG.margin && y >= QR_CONFIG.margin && y < QR_CONFIG.margin + 7)) {
+                        continue;
+                    }
+
+                    // 跳过时序图案
+                    if (x === QR_CONFIG.margin + 6 || y === QR_CONFIG.margin + 6) {
+                        continue;
+                    }
+
+                    // 随机填充
+                    matrix[y][x] = Math.random() > 0.5 ? 1 : 0;
+                }
+            }
+        }
+
+
+        // 将矩阵渲染到Canvas
+        function renderMatrix(matrix) {
+            for (let y = 0; y < matrix.length; y++) {
+                for (let x = 0; x < matrix[y].length; x++) {
+                    ctx.fillStyle = matrix[y][x] ? '#000000' : '#FFFFFF';
+                    ctx.fillRect(
+                        x * QR_CONFIG.moduleSize,
+                        y * QR_CONFIG.moduleSize,
+                        QR_CONFIG.moduleSize,
+                        QR_CONFIG.moduleSize
+                    );
+                }
+            }
+        }
+
+        
+        // 倒计时功能
+        function startCountdown() {
+            let minutes = 5;
+            let seconds = 0;
+
+            const countdownInterval = setInterval(() => {
+                if (seconds === 0) {
+                    if (minutes === 0) {
+                        clearInterval(countdownInterval);
+                        // 倒计时结束，刷新二维码
+                        generatePaymentQRCode();
+                        // 重新开始倒计时
+                        startCountdown();
+                        return;
+                    }
+                    minutes--;
+                    seconds = 59;
+                } else {
+                    seconds--;
+                }
+
+                // 更新显示
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

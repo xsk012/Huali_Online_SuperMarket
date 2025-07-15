@@ -1,0 +1,62 @@
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+
+    .text-shadow {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .transition-height {
+        transition: max-height 0.5s ease-in-out;
+    }
+
+    .bg-gradient-green {
+        background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+    }
+
+    .bg-green {
+        background: #4CAF50;
+    }
+
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(6px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+a.head-a {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: #bcffac;
+    transition: all 0.3s ease;
+}
+
+a.head-a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+div.head-div {
+    animation: float 2s ease-in-out infinite;
+}
+
+div.head-div:hover {
+    animation-play-state: paused;
+}

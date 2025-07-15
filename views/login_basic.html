@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/login_basic.css">
+    <title>华理线上超市平台-登录与注册</title>
+</head>
+
+<body>
+    <!-- 提示框 -->
+    <div id="notification" class="notification"></div>
+
+    <!-- 主界面 -->
+    <div class="container">
+
+        <!-- 登录、注册表单 -->
+        <div class="container-form container-signup">
+            <form action="/login/1" class="form" id="form1" method="post">
+                <h2 class="form-title">注册账号</h2>
+                <input type="text" placeholder="用户名：" class="input" name="username" required>
+                <input type="tel" placeholder="电话：" class="input" name="phone" required>
+                <input type="password" placeholder="密码：" class="input" name="password" required>
+                <button type="submit" class="btn">注册</button>
+            </form>
+        </div>
+
+        <div class="container-form container-signin">
+            <form action="/login/2" class="form" id="form2" method="post">
+                <h2 class="form-title">登录账号</h2>
+                <input type="tel" placeholder="电话：" class="input" name="phone" required>
+                <input type="password" placeholder="密码：" class="input" name="password" required>
+                <button type="submit" class="btn">登录</button>
+            </form>
+        </div>
+
+        <!-- 登录、注册表单的切换 -->
+        <div class="container-overlay">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <button class="btn" id="signIn">
+                        已有账号，点击登录
+                    </button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <button class="btn" id="signUp">
+                        没有账号，点击注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        // 显示提示框函数
+        async function showNotification(message, type = 'success') {
+
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // 等待 1 秒后隐藏提示框
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    resolve();
+                }, 1000);
+            });
+        }
+
+        const signInBtn = document.getElementById("signIn");
+        const signUpBtn = document.getElementById("signUp");
+        const container = document.querySelector(".container");
+        const loginForm = document.getElementById("form2");
+        const registerForm = document.getElementById("form1");
+
+        // 注册/登录按钮交互
+        signInBtn.addEventListener("click", () => {
+            container.classList.remove("panel-active");
+        });
+        signUpBtn.addEventListener("click", () => {
+            container.classList.add("panel-active");
+        });
+
+        // 登录表单提交（使用 async/await 处理异步流程）
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            const phone = this.phone.value;
+            const password = this.password.value;
+            const formData = { phone, password };
+            const loginBtn = this.querySelector("button");
+            const originalText = loginBtn.textContent;
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = "登录中...";
+
+            try {
+
+                const response = await fetch('/login/2', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                
+                if (data.code == 200) {
+                    // 显示提示框并等待动画完成
+                    await showNotification("登录成功");
+                    window.location.href = '/products/';
+                } else {
+                    // 显示错误提示
+                    await showNotification(data.message, 'error');
+                }
+    
+            } catch (error) {
+                await showNotification("登录请求出错: " + error.message, 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
+            }
+        });
+
+        // 注册表单提交
+        registerForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            const username = this.username.value;
+            const phone = this.phone.value;
+            const password = this.password.value;
+            const formData = { name: username, phone, password };
+            const loginBtn = this.querySelector("button");
+            const originalText = loginBtn.textContent;
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = "注册中...";
+
+            try {
+
+                const response = await fetch("/login/1", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                
+                if (data.code == 200) {
+                    await showNotification("注册成功");
+                    window.location.href = "/basic.html";
+                } else {
+                    await showNotification(data.message, 'error');
+                }
+
+            } catch (error) {
+                await showNotification("注册请求出错: " + error.message, 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+
+</html>

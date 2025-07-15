@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华理线上超市平台-商品详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/detail.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        huali: {
+                            green: '#2E7D32',
+                            lightGreen: '#4CAF50',
+                            darkGreen: '#1B5E20',
+                            gray: '#6B7280',
+                            lightGray: '#F3F4F6',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <!-- 顶部导航栏 -->
+    <header
+        class="bg-gradient-to-r from-huali-darkGreen to-huali-lightGreen text-white shadow-md sticky top-0 z-50 transition-all duration-300 h-[100px] flex items-center">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <!-- 左侧Logo区域 -->
+            <div class="flex items-center space-x-2">
+                <i
+                    class="fa fa-shopping-basket text-xl md:text-2xl transform hover:scale-110 transition-transform duration-300"></i>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-shadow">华东理工大学线上超市平台-商品详情</h1>
+            </div>
+
+            <!-- 右侧导航区域 -->
+            <div class="flex items-center space-x-6">
+                <!-- 首页链接 -->
+                <a href="/products/"
+                    class="hidden md:inline-flex items-center text-huali-darkGreen hover:text-huali-darkGreen font-medium relative group transition-all duration-300 head-a">
+                    <span>首页</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-12 py-16">
+        <!-- 面包屑导航 -->
+        <div class="mb-6 text-sm text-gray-500">
+            <a href="/products/" class="hover:text-huali-green">商品选购</a>
+            <span class="mx-2">/</span>
+            <span id="productName_head" class="text-gray-700">华东理工定制版奶茶</span>
+        </div>
+
+        <!-- 商品信息与评论区 -->
+        <div class="w-full px-4">
+
+            <!-- 商品信息 -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden card-hover">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2 overflow-hidden">
+                            <img id="productImage" src="" alt="加载中..."
+                                class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        </div>
+                        <div class="md:w-1/2 p-6 flex flex-col">
+                            <h2 id="productName" class="text-2xl font-bold text-gray-800 mb-2">加载中...</h2>
+                            <div class="bg-huali-lightGreen/10 p-4 rounded-lg mb-6">
+                                <p id="productPrice" class="text-huali-darkGreen font-bold text-2xl">¥12.90</p>
+                            </div>
+                            <p id="productDescription" class="text-gray-700 mb-6">
+                                加载中...
+                            </p>
+                            <div class="flex flex-wrap gap-4 mt-auto">
+                                <button
+                                    class="flex-1 bg-huali-green hover:bg-huali-darkGreen text-white py-3 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                    <i class="fa fa-shopping-cart mr-2"></i>加入购物车
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 评论区 -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800">用户评价</h3>
+                    </div>
+
+                    <!-- 评论列表 -->
+                    <div class="space-y-6 comment-show">
+
+                    </div>
+
+                    <!-- 发表评论 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 card-hover comment-create">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">发表评论</h3>
+                        <form>
+
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">评论内容</label>
+                                <textarea
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-huali-green focus:border-transparent transition duration-200"
+                                    rows="4" placeholder="分享你的购买体验..."></textarea>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-huali-green hover:bg-huali-darkGreen text-white py-3 rounded-lg transition-colors duration-200">
+                                提交评论
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- 提示框 -->
+    <div id="snackbar"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-md shadow-lg z-50 text-white opacity-0 transition-all duration-300 pointer-events-none">
+        <span id="snackbarMessage"></span>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+
+        const currentUrl = window.location.href;
+        const urlParts = currentUrl.split('/');
+        const productId = urlParts[urlParts.length - 1];
+
+
+        // 显示商品信息
+        async function initProductDetail() {
+            try {
+                const response = await fetch(`/products/details/${productId}`);
+                if (!response.ok) {
+                    throw new Error('商品数据获取失败');
+                }
+                const result = await response.json();
+                const product = result.data;
+
+                const productImage = document.getElementById('productImage');
+                productImage.src = `/${productId}.png`;
+                productImage.alt = `${product.product_name}`;
+                document.getElementById('productName').textContent = product.product_name;
+                document.getElementById('productPrice').textContent = `¥${product.price.toFixed(2)}`;
+                document.getElementById('productDescription').textContent = product.info;
+                document.getElementById('productName_head').textContent = product.product_name;
+
+                const addToCartBtn = document.querySelector('button:has(.fa-shopping-cart)');
+                addToCartBtn.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch('/products/add-to-cart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                id: productId,
+                                product_name: product.product_name,
+                                price: product.price
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('加入购物车失败');
+                        }
+
+                        const result = await response.json();
+                        showToast('加入购物车成功！');
+                        console.log('加入购物车结果:', result);
+
+                    } catch (error) {
+                        console.error('加入购物车出错:', error);
+                        alert('加入购物车失败: ' + error.message);
+                    }
+                });
+
+            } catch (error) {
+                console.error('加载商品详情出错:', error);
+            }
+        }
+
+
+        // 显示评论区信息
+        async function initCommentData() {
+            try {
+                const response = await fetch(`/products/comments/${productId}`);
+                if (!response.ok) {
+                    throw new Error('评论数据获取失败');
+                }
+
+                const result = await response.json();
+                const comments = result.data.comments_list || [];
+
+                const commentListContainer = document.querySelector(".comment-show");
+
+                commentListContainer.innerHTML = '';
+
+                if (comments.length === 0) {
+                    const noCommentDiv = document.createElement('div');
+                    noCommentDiv.className = 'text-center text-gray-500 py-4';
+                    noCommentDiv.textContent = '暂无评论，快来发表第一条评论吧！';
+                    commentListContainer.prepend(noCommentDiv);
+                    return;
+                }
+
+                // 动态生成评论
+                comments.forEach(comment => {
+                    const commentItem = document.createElement('div');
+                    commentItem.className = 'pb-6 border-b border-gray-100';
+
+
+                    const timestamp = Number(comment.time) * 1000;
+                    const commentDate = new Date(timestamp);
+
+                    // 格式化时间到秒
+                    const formattedDate = `${commentDate.getFullYear()}-${String(commentDate.getMonth() + 1).padStart(2, '0')}-${String(commentDate.getDate()).padStart(2, '0')} ${String(commentDate.getHours()).padStart(2, '0')}:${String(commentDate.getMinutes()).padStart(2, '0')}:${String(commentDate.getSeconds()).padStart(2, '0')}`;
+
+                    commentItem.innerHTML = `
+                <div class="flex items-start">
+                    <img src="/profile${comment.avatar_id}.png" alt="${comment.user_name}的头像"
+                        class="w-10 h-10 rounded-full object-cover mr-3">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-medium text-huali-green text-lg">${comment.user_name}</h4>
+                            <span class="text-gray-800 text-sm">${formattedDate}</span>
+                        </div>
+                        <br>
+                        <p class="text-gray-700 mt-2">
+                            ${comment.info}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+                    commentListContainer.appendChild(commentItem);
+                });
+
+            } catch (error) {
+                console.error('加载评论数据出错:', error);
+                alert('加载评论数据出错:' + error.message);
+            }
+        }
+
+
+        // 加载页面所有数据
+        async function initData() {
+            initProductDetail();
+            initCommentData();
+        }
+
+
+        // 评论提交事件
+        async function handleCommentSubmit(event) {
+            event.preventDefault();
+
+            const textarea = document.querySelector('textarea[placeholder="分享你的购买体验..."]');
+            const content = textarea.value.trim();
+
+            if (!content) {
+                showToast('请输入评论内容', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/products/comment-handle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        time: Math.floor(Date.now() / 1000), // 精确到秒的时间戳
+                        info: content
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('提交评论失败');
+                }
+
+                const result = await response.json();
+                showToast('评论提交成功！');
+                textarea.value = '';
+
+                initCommentData();
+
+            } catch (error) {
+                console.error('提交评论出错:', error);
+                alert('提交评论失败: ' + error.message);
+            }
+        }
+
+
+        // 提示框
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 1000,
+                gravity: "top",
+                position: "center",
+                backgroundColor: type === 'success' ? "#0099ff" : "#F5222D",
+                style: {
+                    borderRadius: "12px", // 16px 圆角
+                },
+                stopOnFocus: true, // 鼠标悬停时暂停消失
+            }).showToast();
+        }
+
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+
+        const commentForm = document.querySelector('.comment-create form');
+        commentForm.addEventListener('submit', handleCommentSubmit);
+
+        window.addEventListener('load', initData);
+
+    </script>
+</body>
+
+</html>
